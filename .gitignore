@@ -3,4 +3,4 @@
 data/
 test.http
 *.json
-__pycache__
+__pycache__/
