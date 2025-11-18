@@ -1,0 +1,17 @@
+langchain>=0.2.10
+langchain-core>=0.2.10
+langchain-community>=0.2.9
+langchain-openai>=0.2.0
+langchain-groq>=0.1.4
+langchain-google-genai>=1.0.5
+tiktoken>=0.7.0
+python-dotenv>=1.0.1
+pydantic>=2.9.2
+docx2txt>=0.8
+pypdf>=5.0.0
+unstructured>=0.15.0
+aiofiles>=24.1.0
+fastapi>=0.115.0
+uvicorn>=0.30.6
+python-multipart>=0.0.12
+pydantic

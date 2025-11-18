@@ -1,0 +1,6 @@
+.env
+.venv
+data/
+test.http
+*.json
+__pycache__
