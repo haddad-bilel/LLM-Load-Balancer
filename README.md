@@ -10,6 +10,26 @@ This project ingests a set of business/LLM-spec documents, chunks them, summariz
 - Corpus-level synthesis, relationship discovery, and criteria generation
 - Simple CLI runner that outputs a single `output.json`
 
+### Load-Balanced Summarization Examples
+- `LB.py` defines a reusable `LoadBalancer` that can:
+  - Spin up clients from model names (e.g., Groq + OpenRouter routes).
+  - Or wrap already-instantiated LangChain clients via `LoadBalancer.from_models(...)`.
+- `lb_summarizer.py` shows chunk criteria extraction running in parallel with the load balancer plus an `asyncio.Semaphore` to keep a fixed number of concurrent calls.
+- `lb_from_models_demo.py` demonstrates mixing Groq, OpenRouter, and Gemini clients that were created manually, then running prompts through the balancer in parallel.
+
+Run either demo after exporting the required keys (e.g., `GROQ_API_KEY`, `OPENROUTER_API_KEY`, `GOOGLE_API_KEY`). For example:
+
+```powershell
+$env:GROQ_API_KEY="gsk_..."
+$env:OPENROUTER_API_KEY="sk-or-..."
+$env:GOOGLE_API_KEY="ya29..."
+python lb_summarizer.py
+# or
+python lb_from_models_demo.py
+```
+
+Both scripts print which prompt was handled along with the model response, illustrating how workloads can be fanned out across providers safely.
+
 ## FastAPI Server
 
 Start the API server (dev):
