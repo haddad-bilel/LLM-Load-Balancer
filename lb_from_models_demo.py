@@ -39,6 +39,7 @@ async def main() -> None:
     prompts = [
         "Give one sentence defining model governance.",
         "List an evaluation metric for LLM security.",
+        "List an evaluation metric for LLM security."
     ]
     semaphore = asyncio.Semaphore(1)
     async def run_prompt(p: str) -> None:
