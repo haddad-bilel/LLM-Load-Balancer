@@ -1,12 +1,12 @@
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
-from openai import BaseModel
+from pydantic import BaseModel, SecretStr
 from LB import LoadBalancer
 from ingestion import load_documents
 from chunking import chunk_documents
 import asyncio
 import time as t
-
+from langchain_groq import ChatGroq
 from langchain_openrouter import ChatOpenRouter
 
 prompt = """
@@ -62,7 +62,7 @@ async def main():
     model="gemini-2.5-flash",
     api_key=os.getenv('GOOGLE_API_KEY','')
     )
-    
+    groq_model = ChatGroq(model='llama-3.3-70b-versatile',api_key=SecretStr(os.getenv('LB_API_KEY')))
     lb = LoadBalancer(model_names=["groq:llama-3.3-70b-versatile","groq:llama-3.3-70b-versatile"], strategy="round_robin")._add_models([openrouter_model,gemini_model]).with_structured_output(Criteria)
     semaphore = asyncio.Semaphore(4)
     results = []
