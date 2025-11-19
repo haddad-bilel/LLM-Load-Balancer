@@ -51,7 +51,7 @@ class Criteria(BaseModel):
 async def main():
     docs = load_documents("Data")
     chunks = chunk_documents(docs, chunk_size=1000, chunk_overlap=200)
-    lb = LoadBalancer(model_names=["groq:llama-3.3-70b-versatile", "groq:llama-3.3-70b-versatile"], strategy="round_robin").with_structured_output(Criteria)
+    lb = LoadBalancer(model_names=["groq:llama-3.3-70b-versatile", "mistralai/mistral-small-3.2-24b-instruct:free","google/gemma-3-27b-it:free"], strategy="round_robin").with_structured_output(Criteria)
     semaphore = asyncio.Semaphore(4)
     results = []
     async def handle(text:str):
@@ -61,7 +61,7 @@ async def main():
             print(type(result))
             results.append(result.model_dump())
             print(f"Response: {result}\n{'-' * 60}")
-    await asyncio.gather(*(handle(doc.page_content) for doc in chunks))
+    await asyncio.gather(*(handle(doc.page_content) for doc in chunks[:10]))
     if len(results):
         with open('results2.json','w') as fp:
             import json
