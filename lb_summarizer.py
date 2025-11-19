@@ -1,9 +1,14 @@
+import os
+from langchain_google_genai import ChatGoogleGenerativeAI
 from openai import BaseModel
 from LB import LoadBalancer
 from ingestion import load_documents
 from chunking import chunk_documents
 import asyncio
 import time as t
+
+from langchain_openrouter import ChatOpenRouter
+
 prompt = """
 You are a helpful Tester that extracts LLM's Testing Criteria from specification documents.
 The criteria are used then to evaluate the output of the LLM or the AI solution .
@@ -32,7 +37,7 @@ INSTRUCTIONS:
 1. THE CRITERIA EXTRACTED SHOULD ONLY BE USED TO EVALUATE THE OUTPUT OF THE MODEL
 2. IF NO CRITERIA WERE FOUND RETUNR EMPTY JSON
 3. DON'T RETURN ANY FOLLOW UP QUESTION
-4. CUSTOM criteria are extracted from the specification Docs
+4. CUSTOM criteria are extracted from the specification Docs and it name can be extracted from there
 OUTPUT FORMAT:
 {{
 "category":"Testing Criteria Category (Bias, Toxicity, Security, Fairness, CUSTOM )",
@@ -51,7 +56,14 @@ class Criteria(BaseModel):
 async def main():
     docs = load_documents("Data")
     chunks = chunk_documents(docs, chunk_size=1000, chunk_overlap=200)
-    lb = LoadBalancer(model_names=["groq:llama-3.3-70b-versatile", "mistralai/mistral-small-3.2-24b-instruct:free","google/gemma-3-27b-it:free"], strategy="round_robin").with_structured_output(Criteria)
+    openrouter_model = ChatOpenRouter(model="meta-llama/llama-3.3-70b-instruct:free",openai_api_key=os.environ["Testing"],
+        temperature=0.2,)
+    gemini_model = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    api_key=os.getenv('GOOGLE_API_KEY','')
+    )
+    
+    lb = LoadBalancer(model_names=["groq:llama-3.3-70b-versatile","groq:llama-3.3-70b-versatile"], strategy="round_robin")._add_models([openrouter_model,gemini_model]).with_structured_output(Criteria)
     semaphore = asyncio.Semaphore(4)
     results = []
     async def handle(text:str):
@@ -61,7 +73,7 @@ async def main():
             print(type(result))
             results.append(result.model_dump())
             print(f"Response: {result}\n{'-' * 60}")
-    await asyncio.gather(*(handle(doc.page_content) for doc in chunks[:10]))
+    await asyncio.gather(*(handle(doc.page_content) for doc in chunks))
     if len(results):
         with open('results2.json','w') as fp:
             import json

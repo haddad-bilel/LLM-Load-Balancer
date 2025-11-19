@@ -4,3 +4,4 @@ data/
 test.http
 *.json
 __pycache__/
+*_copy.py

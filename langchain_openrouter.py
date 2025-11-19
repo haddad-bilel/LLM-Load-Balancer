@@ -32,9 +32,11 @@ class ChatOpenRouter(ChatOpenAI):
             default_headers=headers,
             **kwargs,
         )
-api_key = os.getenv("Testing")
-openrouter_model = ChatOpenRouter(
-    model="qwen/qwen3-14b:free",
-    openai_api_key=api_key
-)
-print(openrouter_model.invoke('What is the fastest car in the world ?'))
+
+if __name__=="__main__":
+    api_key = os.getenv("Testing")
+    openrouter_model = ChatOpenRouter(
+        model="qwen/qwen3-14b:free",
+        openai_api_key=api_key
+    )
+    print(openrouter_model.invoke('What is the fastest car in the world ?'))
