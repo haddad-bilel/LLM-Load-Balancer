@@ -89,6 +89,11 @@ class LoadBalancer:
         # default round robin
         idx = next(self._cycle)
         return self.clients[idx]
+    def _add_models(self,clients=Sequence[Any]):
+        if clients ==[]:
+            raise("Clients List is empty !")
+        self.clients.extend(clients)
+        return self
 
     async def agenerate(self, prompt: str) -> str:
         client = self._pick_client()
